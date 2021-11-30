@@ -17,5 +17,6 @@
         <header> {% include "_navbar.html.twig" %} </header>
         {% block body %}
         {% endblock %}
+        <a href="{{ path('program_show', {page: 5}) }}">Afficher la page 5</a>
     </body>
 </html>
