@@ -2,36 +2,53 @@
 
 namespace App\Controller;
 
+use App\Entity\Program;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+    
+/**
+ * @Route("/program", name="program_")
+ */
 
 Class ProgramController extends AbstractController
 {
     /**
-     * @Route("/program/", name="program_index")
+     * Show all rows from Program’s entity
+     *
+     * @Route("/", name="index", methods={"GET"})
+     * @return Response A response instance
      */
     public function index(): Response
     {
-        return $this->render('program/index.html.twig', [
-            'website' => 'Wild Séries',
-        ]);
-    }
+        $programs = $this->getDoctrine()
+        ->getRepository(Program::class)
+        ->findAll();
 
+        return $this->render(
+            'program/index.html.twig',
+            ['programs' => $programs]
+            );
+    }
     /**
-    * @Route("/program/{page}", methods={"GET"}, requirements={"page"="\d+"}, name="program_show")
+    * Getting a program by id
+    *
+    * @Route("/show/{id<^[0-9]+$>}", name="show")
+    * @return Response
     */
-    public function show(int $page = 1): Response
+    public function show(int $id):Response
     {
-        return $this->render('program/show.html.twig', ['page' => $page]);
-    }
+        $program = $this->getDoctrine()
+        ->getRepository(Program::class)
+        ->findOneBy(['id' => $id]);
 
-    public function new(): Response
-    {
-    // traitement d'un formulaire par exemple
-
-    // redirection vers la page 'program_show',
-    // correspondant à l'url /program/4
-    return $this->redirectToRoute('program_show', ['id' => 4]);
+        if (!$program) {
+            throw $this->createNotFoundException(
+            'No program with id : '.$id.' found in program\'s table.'
+            );
+            }
+        return $this->render('program/show.html.twig', [
+        'program' => $program,
+        ]);
     }
 }
