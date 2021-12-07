@@ -33,7 +33,7 @@ Class CategoryController extends AbstractController
             );
     }
 
-        /**
+    /**
      * @Route("/{categoryName}", name = "show")
      * @return Response A response instance
      */
@@ -43,9 +43,15 @@ Class CategoryController extends AbstractController
         if (!$category) {
             throw $this->createNoFoundException('No category with name : '.$categoryName.' found');
         }
+
+        $programs = $this->getDoctrine()
+            ->getRepository(Program::class)
+            ->findByCategory($category, ['id' => 'desc'], 3);
+
         return $this->render(
             'Category/show.html.twig',
-            ['category' => $category]
+            ['programs' => $programs,
+            'category' => $category]
             );
     }
 }
